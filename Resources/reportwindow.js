@@ -16,6 +16,8 @@ function reportwindow()
 		});
 	rwindow.addEventListener('focus', updatestuff);
 	
+	//setupGPS();
+	
 	var btn = Ti.UI.createButton({
 			title : 'Capture Kunda >>',
 			font : 
@@ -79,8 +81,9 @@ function reportwindow()
 				
 				retakebtn = genericButton();
 				topview.add(retakebtn);
+				camwindow.add(topview);     //DONE TOP VIEW
 				
-				camwindow.add(topview);
+				//setupGPS();
 				
 				lowerview = genericview();
 				lowerview.layout = 'vertical';
@@ -100,6 +103,12 @@ function reportwindow()
 				
 				submitbtn.addEventListener('click', function(e)
 				{
+					if (lat == 0 && longi == 0)
+					{
+						displaydata.text = 'Wait for coordinates! Cant submit yet!';
+						return;
+					}
+					
 					submitbtn.enabled=false;
 					if(String(details.value).length<3)
 					{
@@ -119,7 +128,7 @@ function reportwindow()
 					
 					rclient.onsendstream = function(e)
 					{
-					   displaydata.text = e.progress;
+					   displaydata.text = 'Upload: ' + parseInt( ( 100 * (parseFloat(e.progress)) ) ) + '%';
 					};
 					
 					rclient.onerror = function(e) 
@@ -219,6 +228,66 @@ function reportwindow()
 				displaydata.font = { fontSize:13, fontFamily:'Helvetica Neue'};
 				displaydata.top = '7%';
 				lowerview.add(displaydata);
+				
+				var coordss = genericLabel();
+				coordss.font = { fontSize:11, fontFamily:'Helvetica Neue'};
+				coordss.top = '4%';
+				lowerview.add(coordss);
+				
+				
+				if (Ti.Platform.osname == "android") 
+				{
+					//win.title = 'Submit Report (A)';
+					var providerGps = Ti.Geolocation.Android.createLocationProvider(
+					{
+						name: Ti.Geolocation.PROVIDER_GPS,
+						minUpdateDistance: 0,
+						minUpdateTime: 0
+					});
+					
+					Ti.Geolocation.Android.addLocationProvider(providerGps);
+					Ti.Geolocation.Android.manualMode = true;
+					
+					//NEW rule
+					var Rule = Ti.Geolocation.Android.createLocationRule(
+					{
+						// Rule applies to GPS provider
+						provider : Ti.Geolocation.PROVIDER_GPS,
+						// Must be accurate to this value in meters
+						accuracy : 10,
+						// Location update should be no older than this value in milliseconds
+						maxAge : 120,
+						// Location updates should be no more frequent than this value in milliseconds
+						minAge : 100
+					});
+				
+					Ti.Geolocation.Android.addLocationRule(Rule);
+				}
+				else
+				{   
+					//win.title = 'Camera Preview iOS';
+					Ti.Geolocation.purpose = 'Get Current Location';
+					Ti.Geolocation.distanceFilter = 0;
+					Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
+					Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
+					//Ti.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_HIGH;
+				}
+				
+				Ti.Geolocation.addEventListener('location', function(e)
+				{
+			       if (!e.success || e.error)
+			       {
+			       		coordss.text = 'Coordinates N/A right now... wait?';
+						//alert('error ' + JSON.stringify(e.error));
+						lat = 0;
+						longi = 0;
+						return;
+			       } 
+			       coordss.text = 'Lat: ' + e.coords.latitude + ' Long: ' + e.coords.longitude;
+			       lat = e.coords.latitude;
+			       longi = e.coords.longitude;
+			       
+				});
 				
 			},
 			error:function(e)
@@ -391,7 +460,7 @@ function genericLabel()
 		
 	var glabel = Titanium.UI.createLabel(
 	{
-		text:'N',
+		//text:'N',
 		font:
 		{
 			fontSize:14,fontFamily:'Helvetica Neue',fontWeight:'bold'
@@ -562,3 +631,65 @@ function getpending()
 	
 	return pendingnum;
 }
+
+
+/*
+function setupGPS()
+{	
+	if (Ti.Platform.osname == "android") 
+	{
+		//win.title = 'Submit Report (A)';
+		var providerGps = Ti.Geolocation.Android.createLocationProvider(
+		{
+		name: Ti.Geolocation.PROVIDER_GPS,
+		minUpdateDistance: 0,
+		minUpdateTime: 0
+		});
+		
+		Ti.Geolocation.Android.addLocationProvider(providerGps);
+		Ti.Geolocation.Android.manualMode = true;
+		
+		//NEW rule
+		var Rule = Ti.Geolocation.Android.createLocationRule(
+		{
+			// Rule applies to GPS provider
+			provider : Ti.Geolocation.PROVIDER_GPS,
+			// Must be accurate to this value in meters
+			accuracy : 10,
+			// Location update should be no older than this value in milliseconds
+			maxAge : 120,
+			// Location updates should be no more frequent than this value in milliseconds
+			minAge : 100
+		});
+	
+		Ti.Geolocation.Android.addLocationRule(Rule);
+	}
+	else
+	{   
+		//win.title = 'Camera Preview iOS';
+		Ti.Geolocation.purpose = 'Get Current Location';
+		Ti.Geolocation.distanceFilter = 0;
+		Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
+		Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
+		//Ti.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_HIGH;
+	}
+	
+	Ti.Geolocation.addEventListener('location', function(e)
+	{
+       if (!e.success || e.error)
+       {
+       		coordss.text = 'Coordinates N/A right now... wait?';
+			//alert('error ' + JSON.stringify(e.error));
+			lat = 0;
+			longi = 0;
+			return;
+       } 
+       coordss.text = 'Lat: ' + e.coords.latitude + ' Long: ' + e.coords.longitude + ' Accu: ' + e.coords.accuracy + '\n Heading: ' + e.coords.heading + ' Speed: ' + e.coords.speed;
+       lat = e.coords.latitude;
+       longi = e.coords.longitude;
+       
+	});
+				
+}
+
+*/

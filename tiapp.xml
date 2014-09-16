@@ -4,7 +4,7 @@
     <name>NokundaOne</name>
     <version>1.0</version>
     <publisher>NoKunda</publisher>
-    <url>http://nokunda.labandroid.com</url>
+    <url>http://www.nokunda.com</url>
     <description>Combating power theft</description>
     <copyright>2014 by NoKunda</copyright>
     <icon>appicon.png</icon>
@@ -47,7 +47,6 @@
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
             <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
             <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
-            
             <uses-permission android:name="com.nokunda.one.permission.MAPS_RECEIVE"/>
             <permission
                 android:name="com.nokunda.one.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
@@ -70,14 +69,13 @@
         <module platform="android">facebook</module>
         <module platform="iphone">facebook</module>
         <module platform="android">ti.map</module>
-		<module platform="iphone">ti.map</module>
-
+        <module platform="iphone">ti.map</module>
     </modules>
     <modules>
         <module platform="android">facebook</module>
         <module platform="iphone">facebook</module>
         <module platform="android">ti.map</module>
-		<module platform="iphone">ti.map</module>
+        <module platform="iphone">ti.map</module>
     </modules>
     <deployment-targets>
         <target device="iphone">false</target>
