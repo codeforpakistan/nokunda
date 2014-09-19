@@ -17,8 +17,8 @@ function mapwindow()
 	var mapview = Map.createView(
 	{
 	    mapType: Map.NORMAL_TYPE,
-	    region: {latitude:34.0167, longitude:71.5833,
-	            latitudeDelta:0.01, longitudeDelta:0.01},
+	    region: {latitude:33.9996, longitude:71.4866,
+	            latitudeDelta:0.1, longitudeDelta:0.1},
 	    animate:true,
 	    width:Ti.UI.FILL,
 	    height:Ti.UI.FILL,
@@ -70,8 +70,8 @@ function mapwindow()
 	         
 	         var annon = Map.createAnnotation(
 			 {
-			    latitude: 31.0167,
-			    longitude: 71.5833,
+			    latitude: 33.9996,
+			    longitude: 71.4866,
 			    title:"Error Fetching Reports",
 			    subtitle:'Error',
 			    pincolor:Map.ANNOTATION_RED,
@@ -91,80 +91,19 @@ function mapwindow()
 	
 	fillMap();
 	
-	rc = Map.isGooglePlayServicesAvailable();
-	if ( rc == Map.SUCCESS )
+	if (Ti.Platform.osname == "android")
 	{
-		Ti.API.info('GooG Play Services INSTALLED on Phone!!');
+		rc = Map.isGooglePlayServicesAvailable();
+		if ( rc == Map.SUCCESS )
+		{
+			Ti.API.info('Google Play Services INSTALLED on Phone!!');
+		}
+		else
+		{
+			Ti.API.info('Google Play services NOT INSTALLED!');
+		}
 	}
-	else
-	{
-		Ti.API.info('Google Play services NOT INSTALLED!');
-	}
-
+	
 	return self; 
 };
 module.exports = mapwindow;
-
-
-/*
-function fillAnnotations()
-{
-	var annotationss = [];
-	
-	var apiurl = "http://nokunda.labandroid.com/api?task=incidents&limit=10";
- 	var client = Ti.Network.createHTTPClient(
- 	{
-    	onload : function(e) 
-	    {
-	         //Ti.API.info("Received Report: " + this.responseText);
-	         var obj = JSON.parse(this.responseText);
-			 var x = obj.payload.incidents;
-			 lats = x[0].incident.locationlatitude;
-			 longis = x[0].incident.locationlongitude;
-			 
-			 //for (var i=0; i< x.length;i++)
-			 //{
-			 	var annon = Map.createAnnotation(
-				{
-				    latitude: parseFloat(lats),
-				    longitude: parseFloat(longis),
-				    title:"FETCHED REPORT",
-				    subtitle:'Peshawar',
-				    pincolor:Map.ANNOTATION_RED,
-				    myid:1
-				});
-				
-				annotationss.push(annon);
-			 //}
-
-			Ti.API.info("PUSHED Reports: " + annotationss[0]);
-			return annotationss;
-	    },
-     
-     	onerror : function(e) 
-     	{
-         Ti.API.debug(e.error);
-         //alert('error');
-         
-         var annon = Map.createAnnotation(
-		 {
-		    latitude: 0,
-		    longitude: 0,
-		    title:"Error Fetching Reports",
-		    subtitle:'Error',
-		    pincolor:Map.ANNOTATION_RED,
-		    myid:1
-		 });
-		 annotationss.push(annon);
-         //return annotationss;
-     	},
-     
-     
-     timeout : 5000
-	 });
-	 
-	 client.open("GET", apiurl);
-	 client.send();
-	 //return annotationss;
-}
-*/

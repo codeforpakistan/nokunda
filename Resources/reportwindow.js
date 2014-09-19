@@ -80,6 +80,12 @@ function reportwindow()
 				topview.add(imview);
 				
 				retakebtn = genericButton();
+				retakebtn.addEventListener('click', function(e)
+				{
+					camwindow.close();
+					
+				});
+				
 				topview.add(retakebtn);
 				camwindow.add(topview);     //DONE TOP VIEW
 				
@@ -101,6 +107,14 @@ function reportwindow()
 				submitbtn.top = '4%';
 				submitbtn.height = '20%';
 				
+				
+				fbbtn = genericButton();
+				fbbtn.title = 'Facebook Share';
+				fbbtn.top = '8%';
+				fbbtn.height = '15%';
+				fbbtn.enabled=false;
+				
+				
 				submitbtn.addEventListener('click', function(e)
 				{
 					if (lat == 0 && longi == 0)
@@ -110,6 +124,8 @@ function reportwindow()
 					}
 					
 					submitbtn.enabled=false;
+					fbbtn.enabled=true;
+					
 					if(String(details.value).length<3)
 					{
 						details.value = 'NoDetails';
@@ -122,8 +138,39 @@ function reportwindow()
 					
 					rclient.onload = function()
 					{
-					     alert("responseText: " + this.responseText);
-					     curlevel(1);
+					     //alert("responseText: " + this.responseText);
+					     var objRet = JSON.parse(this.responseText);
+				 		 var x = objRet.payload.success;
+				 		 if (x == 'true')
+					     {
+						     curlevel(1);     //increment counter
+						     
+						     var crlevel = curlevel(2);   //get current count
+						     
+						     if ( crlevel == 1)
+						     {
+						     	alert("CONGRATS on your first report!");
+						     }
+						     
+						     if ( crlevel == 4)
+						     {
+						     	alert("Level Unlocked: Kunda Catcher!");
+						     }
+						     
+						     if (crlevel == 8)
+						     {
+						     	alert("Level unlocked: Citizen-on-fire!");
+						     }
+						     
+						     if (crlevel == 14)
+						     {
+						     	alert('Level Unlocked: Certified Reporter!');
+						     }
+						  }
+						  else
+						  {
+						  	alert("Error Uploading!");
+						  }
 					};
 					
 					rclient.onsendstream = function(e)
@@ -161,13 +208,9 @@ function reportwindow()
 					
 				});
 				
-				
 				lowerview.add(submitbtn);
 				
-				fbbtn = genericButton();
-				fbbtn.title = 'Facebook Share';
-				fbbtn.top = '8%';
-				fbbtn.height = '15%';
+				
 				
 				fbbtn.addEventListener('click', function(e)
 				{
@@ -193,7 +236,7 @@ function reportwindow()
 						//var f = Ti.Filesystem.getFile('alhamdulillah.jpg');
 						//var reward = f.read();
 						var data = {
-							message : 'Kunda SPOTTED  and Reported!', 
+							message : 'Kunda SPOTTED & Reported! #NoKunda', 
 							picture : img
 						};
 						
@@ -201,8 +244,8 @@ function reportwindow()
 						{
 							if (e.success) 
 							{
-								alert("Success!  From FB: " + e.result);
-								//alert("Successfully posted to facebook");
+								//alert("Success!  From FB: " + e.result);
+								alert("Succesffuly posted to Facebook!");
 							}
 							else 
 							{
@@ -277,7 +320,7 @@ function reportwindow()
 				{
 			       if (!e.success || e.error)
 			       {
-			       		coordss.text = 'Coordinates N/A right now... wait?';
+			       		coordss.text = 'GPS N/A. Please turn it ON and be outside';
 						//alert('error ' + JSON.stringify(e.error));
 						lat = 0;
 						longi = 0;
@@ -324,7 +367,7 @@ function reportwindow()
 	{
 		var currentlabel= genericLabel();
 		currentlabel.top = '25%';
-		level = curlevel(2);
+		level = curlevel(3);
 		currentlabel.text = "Current Level: " + level;	
 		rwindow.add(currentlabel);
 		
@@ -604,6 +647,37 @@ function curlevel(check)
 		return curcount;
 	}
 	
+	else if (check == 3)
+	{
+		row.close();
+		db.close();
+		
+		if (curcount == 0)
+		{
+			return "Zero Kundas :(";
+		}
+		
+		if ( curcount > 0 && curcount < 4)
+		{
+			return 'Newbie';
+		}
+		
+		if (curcount > 3 && curcount < 8)
+		{
+			return 'Kunda Catcher';
+		}
+		
+		if (curcount > 7 && curcount < 14)
+		{
+			return 'Citizen-on-Fire!';
+		}
+		
+		if (curcount > 13)
+		{
+			return 'Certified Reporter';
+		}
+	}
+	
 	else
 	{
 		row.close();
@@ -631,65 +705,3 @@ function getpending()
 	
 	return pendingnum;
 }
-
-
-/*
-function setupGPS()
-{	
-	if (Ti.Platform.osname == "android") 
-	{
-		//win.title = 'Submit Report (A)';
-		var providerGps = Ti.Geolocation.Android.createLocationProvider(
-		{
-		name: Ti.Geolocation.PROVIDER_GPS,
-		minUpdateDistance: 0,
-		minUpdateTime: 0
-		});
-		
-		Ti.Geolocation.Android.addLocationProvider(providerGps);
-		Ti.Geolocation.Android.manualMode = true;
-		
-		//NEW rule
-		var Rule = Ti.Geolocation.Android.createLocationRule(
-		{
-			// Rule applies to GPS provider
-			provider : Ti.Geolocation.PROVIDER_GPS,
-			// Must be accurate to this value in meters
-			accuracy : 10,
-			// Location update should be no older than this value in milliseconds
-			maxAge : 120,
-			// Location updates should be no more frequent than this value in milliseconds
-			minAge : 100
-		});
-	
-		Ti.Geolocation.Android.addLocationRule(Rule);
-	}
-	else
-	{   
-		//win.title = 'Camera Preview iOS';
-		Ti.Geolocation.purpose = 'Get Current Location';
-		Ti.Geolocation.distanceFilter = 0;
-		Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
-		Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
-		//Ti.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_HIGH;
-	}
-	
-	Ti.Geolocation.addEventListener('location', function(e)
-	{
-       if (!e.success || e.error)
-       {
-       		coordss.text = 'Coordinates N/A right now... wait?';
-			//alert('error ' + JSON.stringify(e.error));
-			lat = 0;
-			longi = 0;
-			return;
-       } 
-       coordss.text = 'Lat: ' + e.coords.latitude + ' Long: ' + e.coords.longitude + ' Accu: ' + e.coords.accuracy + '\n Heading: ' + e.coords.heading + ' Speed: ' + e.coords.speed;
-       lat = e.coords.latitude;
-       longi = e.coords.longitude;
-       
-	});
-				
-}
-
-*/

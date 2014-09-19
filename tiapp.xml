@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
     <id>com.nokunda.one</id>
-    <name>NokundaOne</name>
+    <name>NoKunda</name>
     <version>1.0</version>
     <publisher>NoKunda</publisher>
     <url>http://www.nokunda.com</url>
@@ -40,7 +40,8 @@
         </plist>
     </ios>
     <android xmlns:android="http://schemas.android.com/apk/res/android">
-        <manifest>
+		<manifest android:versionCode="2" android:versionName="1.0.1">
+
             <uses-permission android:name="android.permission.INTERNET"/>
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

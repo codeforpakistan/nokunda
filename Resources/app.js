@@ -1,26 +1,10 @@
 
-/*
-Create first window for first time app launch. Create db n set a value to check it
-Create two imageviews, one for tutorial, 2nd for button. 
-Add click listener to 2nd imgview which has button's pic. Set URL to camera.js
-The next window would be the tabs one.
-Create 3 tabs etc.
-*/
-
-
-//Ti.App.Properties.getString('PLAYER_NAME', '')  -> Properties, on 1st app startup check empty string?
-var title = 'Saved rep 1';
-var title2= 'Second saved report, AFG Colony';
-var listpic = 'thumbkunda.jpg';
-
-
 var db = Ti.Database.open("mydb");
 //db.file.setRemoteBackup(false);    //for iOS excess icloud backups
 db.execute('DROP TABLE IF EXISTS params');
 //db.execute('DROP TABLE IF EXISTS counter');
 
 db.execute('CREATE TABLE IF NOT EXISTS params(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, date TEXT, hour TEXT, minute TEXT, ampm TEXT, lat TEXT, longi TEXT, loc TEXT, pic TEXT);');
-db.execute("INSERT INTO params (title, description, date, hour, minute, ampm, lat, longi, loc, pic) VALUES (?,'zzK','OK','NOO','Ok','aaK','lll','pok','no',?)", title2, listpic);
 
 
 db.execute('CREATE TABLE IF NOT EXISTS counter(id INTEGER PRIMARY KEY AUTOINCREMENT, count INTEGER);');
